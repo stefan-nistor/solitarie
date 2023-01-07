@@ -1,52 +1,42 @@
-from __future__ import annotations
+from PyQt6.QtCore import pyqtSlot as QSlot, Qt
+from PyQt6.QtWidgets import QWidget, QVBoxLayout
 
 from AbstractDrawable import AbstractDrawable
-from PyQt6.QtWidgets import QWidget
-from PyQt6.QtWidgets import QVBoxLayout
-from PyQt6.QtWidgets import QPushButton
-
-from PyQt6.QtCore import pyqtSignal as QSignal
-from PyQt6.QtCore import pyqtSlot as QSlot
-
-from PyQt6.QtCore import Qt
+from GameWidget import GameWidget
+from MenuWidget import MenuWidget
 
 
 class MainWidget(AbstractDrawable, QWidget):
-    started = QSignal()
 
     def __init__(self, parent: QWidget = None):
         super(AbstractDrawable, self).__init__()
         super(QWidget, self).__init__(parent=parent)
 
         self.__main_layout = QVBoxLayout()
-        self.__button_layout = QVBoxLayout()
-        self.__start_button = QPushButton("Start Game", self)
-        self.__exit_button = QPushButton("Exit", self)
+        self.__menu_layout = QVBoxLayout()
 
-    def align_components(self) -> MainWidget:
+        self.__menu_widget = MenuWidget(self)
+        self.__game_widget = None
+
+    def align_components(self) -> AbstractDrawable:
         self.setLayout(self.__main_layout)
 
-        self.__button_layout.addWidget(self.__start_button)
-        self.__button_layout.addWidget(self.__exit_button)
-
-        self.__main_layout.addItem(self.__button_layout)
-
+        self.__main_layout.addItem(self.__menu_layout)
+        self.__menu_layout.addWidget(self.__menu_widget)
         return self
 
     def customize_components(self) -> AbstractDrawable:
-        self.__button_layout.setSpacing(10)
-        self.__button_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.__menu_widget.init()
         return self
 
     def connect_components(self) -> AbstractDrawable:
-        self.__start_button.clicked.connect(self.start_pressed)
-        self.__exit_button.clicked.connect(self.exit_pressed)
+        self.__menu_widget.started.connect(self.started)
+        self.__menu_widget.exited.connect(self.close)
+        # self.__game_widget.exited.connect(self.close)
         return self
 
     @QSlot()
-    def start_pressed(self) -> None:
-        self.started.emit()
-
-    @QSlot()
-    def exit_pressed(self) -> None:
-        self.close()
+    def started(self) -> None:
+        self.__game_widget = GameWidget(self)
+        self.__main_layout.addWidget(self.__game_widget)
+        self.__game_widget.init()
