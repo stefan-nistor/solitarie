@@ -25,9 +25,8 @@ class CardWidget(AbstractDrawable, QGraphicsPixmapItem):
         return self
 
     def customize_components(self) -> AbstractDrawable:
-        self.setShapeMode(QGraphicsPixmapItem.BoundingRectShape)
-        self.setFlag(QGraphicsItem.ItemIsMovable)
-        self.setFlag(QGraphicsItem.ItemSendGeometryChanges)
+        self.setShapeMode(QGraphicsPixmapItem.ShapeMode.BoundingRectShape)
+        self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
         return self
 
     def connect_components(self) -> AbstractDrawable:
@@ -53,6 +52,14 @@ class CardWidget(AbstractDrawable, QGraphicsPixmapItem):
             return 'r'
         return 'b'
 
+    @property
+    def suit(self):
+        return self.__suit
+
+    @property
+    def value(self):
+        return self.__value
+
     def mousePressEvent(self, event: QGraphicsSceneMouseEvent) -> None:
         self.face_up()
         event.accept()
@@ -60,5 +67,3 @@ class CardWidget(AbstractDrawable, QGraphicsPixmapItem):
 
     def mouseReleaseEvent(self, event: QGraphicsSceneMouseEvent) -> None:
         return
-
-
