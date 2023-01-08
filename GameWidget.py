@@ -24,6 +24,7 @@ class GameWidget(AbstractDrawable, QWidget):
 
         self.__graphics_view = QGraphicsView(self)
         self.__scene = QGraphicsScene(self)
+
         self.__deal = DeckWidget()
         self.__cards = []
         self.__piles = []
@@ -78,3 +79,13 @@ class GameWidget(AbstractDrawable, QWidget):
         # noinspection PyUnresolvedReferences
         self.exited.emit()
         self.close()
+
+    def spread_cards(self):
+        cards = self.__cards
+        for n, deck in enumerate(self.__decks, 1):
+            for a in range(n):
+                card = cards.pop()
+                deck.add_card(card)
+                card.face_down()
+                if a == n-1:
+                    card.face_up()
