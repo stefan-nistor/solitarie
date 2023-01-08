@@ -16,7 +16,7 @@ class PileWidget(AbstractDrawable, QGraphicsRectItem):
         super(AbstractDrawable, self).__init__()
         super(QGraphicsItem, self).__init__(parent=parent)
 
-        self.setRect(QRectF(0, 0, 80, 116))
+        self.setRect(QRectF(0, 0, 75, 110))
         self.cards = []
         self.__suit = None
         self.__last_value = 0
