@@ -17,6 +17,7 @@ class DeckWidget(AbstractDrawable, QGraphicsRectItem):
         self.__cards = []
 
     def add_card(self, card: CardWidget) -> None:
+        card.stack = self
         if self.__cards:
             card.setParentItem(self.__cards[-1])
         else:
@@ -30,6 +31,16 @@ class DeckWidget(AbstractDrawable, QGraphicsRectItem):
                 offset = 20
             else:
                 offset = 10
+
+    def add_cards(self, cards):
+        for card in cards:
+            card.stack = self
+            if self.__cards:
+                card.setParentItem(self.__cards[-1])
+            else:
+                card.setParentItem(self)
+
+            self.__cards.append(card)
 
     def remove_card(self, card: CardWidget) -> None:
         card.__stack = None
@@ -48,6 +59,16 @@ class DeckWidget(AbstractDrawable, QGraphicsRectItem):
         card = self.__cards[-1]
         self.remove_card(card)
         return card
+
+    def refresh(self):
+        self.setZValue(-1)
+        offset = 0
+        for n, card in enumerate(self.cards):
+            card.setPos(0, offset)
+            if card.is_face_up:
+                offset = 20
+            else:
+                offset = 10
 
     def align_components(self) -> AbstractDrawable:
         return self

@@ -21,12 +21,16 @@ class CardWidget(AbstractDrawable, QGraphicsPixmapItem):
         self.__face = QPixmap('images/' + '%s_%s' % (self.__suit, self.__value))
         self.__back = QPixmap('images/card_background.svg')
 
+        self.init()
+
     def align_components(self) -> AbstractDrawable:
         return self
 
     def customize_components(self) -> AbstractDrawable:
         self.setShapeMode(QGraphicsPixmapItem.ShapeMode.BoundingRectShape)
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
+        self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
+        self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemSendsScenePositionChanges)
         return self
 
     def connect_components(self) -> AbstractDrawable:
@@ -60,10 +64,35 @@ class CardWidget(AbstractDrawable, QGraphicsPixmapItem):
     def value(self):
         return self.__value
 
-    def mousePressEvent(self, event: QGraphicsSceneMouseEvent) -> None:
-        self.face_up()
-        event.accept()
-        return
+    @property
+    def stack(self):
+        return self.__stack
 
-    def mouseReleaseEvent(self, event: QGraphicsSceneMouseEvent) -> None:
-        return
+    @stack.setter
+    def stack(self, value):
+        self.__stack = value
+
+    def mousePressEvent(self, event) -> None:
+        if self.__stack and self != self.__stack.cards[-1]:
+            event.ignore()
+            return
+        print(self.value, self.suit)
+        self.face_up()
+
+        self.stack.setZValue(1000)
+        event.accept()
+        super(CardWidget, self).mouseReleaseEvent(event)
+
+    def mouseReleaseEvent(self, event) -> None:
+        self.stack.setZValue(-1)
+        items = self.collidingItems()
+        if items:
+            for item in items:
+                if isinstance(item, CardWidget) and item.stack != self.stack:
+                    cards = self.stack.remove_card(self)
+                    item.stack.add_cards(cards)
+                    break
+
+        self.stack.refresh()
+        super(CardWidget, self).mouseReleaseEvent(event)
+

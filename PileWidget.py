@@ -31,6 +31,7 @@ class PileWidget(AbstractDrawable, QGraphicsRectItem):
         return False
 
     def add_card(self, card) -> None:
+
         self.__suit = card.suit
         self.__last_value = self.__last_value + 1
         if self.__last_value == 13:
