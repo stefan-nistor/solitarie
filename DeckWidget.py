@@ -115,7 +115,6 @@ class DeckWidget(QGraphicsRectItem, AbstractDrawable):
         :param card:
         :return:
         """
-
         leaf = self.__leaf
         self.__leaf = leaf.parent
         self.__leaf.leaf = None
@@ -135,21 +134,6 @@ class DeckWidget(QGraphicsRectItem, AbstractDrawable):
             node.setPos(50, y)
             y += 15
             node = node.leaf
-
-
-        # self.__leaf.leaf = self.root_card
-        # leaf->next = root
-        # deck->leaf = leaf->parent
-        # root->parent = leaf
-        # root = leaf
-        # leaf->parent = none
-    # deck->leaf->next = None
-
-        # next = self.root_card
-        # self.__root_card = self.leaf
-        # self.__root_card.__leaf = next
-        # self.root_card.reset()
-        print("")
 
     def intersects(self, card) -> bool:
         """
@@ -225,6 +209,10 @@ class DeckWidget(QGraphicsRectItem, AbstractDrawable):
         return self
 
     def stupid_print(self) -> str:
+        """
+        Foolish method for Russian Debug
+        :return:
+        """
         if self.__root_card is None:
             return f'root -> empty, leaf -> {"empty" if self.__leaf is None else "invalid"}'
         return 'root -> ' + self.__root_card.stupid_print() + ", leaf ->" + self.__leaf.stupid_print()

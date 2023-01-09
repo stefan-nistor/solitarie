@@ -509,6 +509,10 @@ class CardWidget(QGraphicsPixmapItem, AbstractDrawable):
         super(QGraphicsPixmapItem, self).mouseDoubleClickEvent(event)
 
     def stupid_print(self) -> str:
+        """
+        Foolish method for Russian Debug
+        :return:
+        """
         return ('<h>' if self.is_face_down else '') + {
             1: 'A',
             2: '2',

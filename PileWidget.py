@@ -102,10 +102,7 @@ class PileWidget(QGraphicsRectItem, AbstractDrawable):
         :return:
         """
         self.__count += 1
-
-        # noinspection PyUnresolvedReferences
-        # self.check_win.emit()
-
+        self.__parent.is_win()
         if self.__root_card is None:
             card.orphan()
             self.__root_card = card

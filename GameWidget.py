@@ -178,6 +178,10 @@ class GameWidget(QWidget, AbstractDrawable):
         return self
 
     def stupid_print(self):
+        """
+        Foolish method for Russian debug
+        :return:
+        """
         for i, deck in enumerate(self.deck_containers):
             print(f'{i} : {deck.stupid_print()}')
 
@@ -191,6 +195,11 @@ class GameWidget(QWidget, AbstractDrawable):
             deck.update_leaf(root_card, new_leaf)
 
     def do_draw_deck_cleanup(self, card):
+        """
+        Clean draw container node references to avoid unexpected behaviour
+        :param card:
+        :return:
+        """
         node = self.__draw_container.root_card
         last = None
         do_clean = False
@@ -203,7 +212,6 @@ class GameWidget(QWidget, AbstractDrawable):
         if do_clean:
             self.__draw_container.leaf = last
 
-    @QSlot()
     def is_win(self):
         """
         Determine if game is completed
@@ -213,8 +221,9 @@ class GameWidget(QWidget, AbstractDrawable):
         for pile in self.__pile_containers:
             if pile.count != 13:
                 won = False
-        won = True
+        # won = True
         if won is True:
-            QMessageBox().information(self, "Game won", "Congratulations")
+            QMessageBox().information(self, "Game won", "Congratulations. You won")
+
 
 
