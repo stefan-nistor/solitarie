@@ -38,6 +38,5 @@ class MainWidget(AbstractDrawable, QWidget):
     @QSlot()
     def started(self) -> None:
         self.__game_widget = GameWidget(self)
-        self.__main_layout.addWidget(self.__game_widget)
         self.__game_widget.init()
-        self.__game_widget.spread_cards()
+        self.__main_layout.addWidget(self.__game_widget)

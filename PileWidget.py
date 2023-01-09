@@ -1,53 +1,63 @@
 from __future__ import annotations
 
-from PyQt6.QtCore import QRectF
-from PyQt6.QtWidgets import QGraphicsRectItem, QGraphicsItem
+from typing import Union
+
+from PyQt6.QtWidgets import QGraphicsRectItem
 
 from AbstractDrawable import AbstractDrawable
-from PyQt6.QtCore import pyqtSignal as QSignal
-
 from CardWidget import CardWidget
 
 
-class PileWidget(AbstractDrawable, QGraphicsRectItem):
-    completed = QSignal()
-
-    def __init__(self, parent: QGraphicsRectItem = None):
+class PileWidget (QGraphicsRectItem, AbstractDrawable):
+    def __init__(self, parent=None, x=0, y=0):
+        super(QGraphicsRectItem, self).__init__()
         super(AbstractDrawable, self).__init__()
-        super(QGraphicsItem, self).__init__(parent=parent)
 
-        self.setRect(QRectF(0, 0, 75, 110))
-        self.cards = []
-        self.__suit = None
-        self.__last_value = 0
+        self.__parent = parent
+        self.__x = x
+        self.__y = y
 
-    def is_valid(self, card: CardWidget) -> bool:
-        if self.__suit is None:
-            return True
+        self.__root_card: Union[CardWidget, None] = None
+        self.__leaf: Union[CardWidget, None] = None
 
-        if card.suit == self.__suit and card.value == self.__last_value + 1:
-            return True
-
-        return False
-
-    def add_card(self, card) -> None:
-
-        self.__suit = card.suit
-        self.__last_value = self.__last_value + 1
-        if self.__last_value == 13:
-            # noinspection PyUnresolvedReferences
-            self.completed.emit()
-
-    @property
-    def is_completed(self):
-        return self.__last_value == 13
+    def reset(self):
+        if self.__root_card is not None:
+            self.__root_card.reset_for_upper_pile()
 
     def align_components(self) -> AbstractDrawable:
-        pass
+        return self
 
     def customize_components(self) -> AbstractDrawable:
-        pass
+        return self
 
     def connect_components(self) -> AbstractDrawable:
-        pass
+        return self
+
+    def init(self) -> AbstractDrawable:
+        super().init()
+
+        self.setRect(0, 0, 75, 110)
+        self.setPos(self.__x, self.__y)
+
+        return self
+
+    def can_receive(self, card: CardWidget) -> bool:
+        if self.__root_card is None and card.value == 1:
+            return True
+        if self.__leaf is not None:
+            return self.__leaf.type == card.type and self.__leaf.value == card.value - 1
+        return False
+
+    def receive(self, card):
+        self.add_card(card)
+        self.__root_card.reset_pile()
+
+    def add_card(self, card):
+        if self.__root_card is None:
+            card.orphan()
+            self.__root_card = card
+            self.__root_card.draw_face(self.__x, 50, 1)
+            self.__leaf = card.get_leaf()
+        else:
+            self.__leaf = self.__root_card.set_leaf_pile(card, x=self.__x, y=self.__y, z=2).get_leaf()
 
